@@ -381,6 +381,83 @@ button[type="submit"]:hover:enabled {
   background: var(--panel-2);
 }
 
+.theory {
+  margin-top: 28px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 22px 26px;
+}
+
+.theory h3 {
+  margin: 0 0 4px;
+}
+
+.theory h4 {
+  margin: 14px 0 12px;
+  color: var(--muted);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 12px;
+}
+
+.theory-steps {
+  margin: 0;
+  padding-left: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.theory-steps > li::marker {
+  color: var(--accent-2);
+  font-weight: 700;
+}
+
+.theory-substeps {
+  margin: 8px 0 0;
+  padding-left: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.display-eq {
+  display: flex;
+  justify-content: center;
+  margin: 14px 0 6px;
+  font-size: 17px;
+}
+
+.math {
+  font-family: "Cambria Math", "Latin Modern Math", Georgia, serif;
+  white-space: nowrap;
+}
+
+.math-var {
+  font-style: italic;
+  font-family: inherit;
+}
+
+.frac {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  vertical-align: middle;
+  margin: 0 4px;
+  line-height: 1.1;
+}
+
+.frac-num {
+  border-bottom: 1px solid currentColor;
+  padding: 0 8px 2px;
+}
+
+.frac-den {
+  padding: 2px 8px 0;
+}
+
 @media (max-width: 900px) {
   .app-shell {
     grid-template-columns: 1fr;

@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { MODELS, getModel } from "@/lib/models";
 import { ModelRunner } from "./ModelRunner";
+import { Theory } from "./Theory";
 
 export const dynamic = "force-dynamic";
 
@@ -24,6 +25,7 @@ export default async function ModelPage({
         <p className="muted">{model.description}</p>
       </header>
       <ModelRunner model={model} />
+      <Theory slug={slug} />
     </article>
   );
 }
