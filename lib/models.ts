@@ -198,6 +198,7 @@ export const MODELS: ModelDefinition[] = [
           { key: "f_b", label: "f(b)", format: "scientific" },
           { key: "f_c", label: "f(c)", format: "scientific" },
           { key: "error", label: "error", format: "scientific" },
+          { key: "decision", label: "decisión", format: "string" },
         ],
       },
     ],

@@ -130,6 +130,14 @@ def solve(params: dict[str, Any]) -> dict[str, Any]:
         fc = f(c)
         err = abs(cur_b - cur_a) / 2.0
 
+        will_stop = abs(fc) < tol or err < tol
+        if will_stop:
+            decision = "fin"
+        elif fa * fc < 0:
+            decision = "b ← c"
+        else:
+            decision = "a ← c"
+
         iterations.append(
             {
                 "i": i,
@@ -140,10 +148,11 @@ def solve(params: dict[str, Any]) -> dict[str, Any]:
                 "f_b": fb,
                 "f_c": fc,
                 "error": err,
+                "decision": decision,
             }
         )
 
-        if abs(fc) < tol or err < tol:
+        if will_stop:
             root = c
             converged = True
             break
