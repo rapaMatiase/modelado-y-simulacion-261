@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Clima de las 25 ciudades más pobladas del mundo</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+    min-height: 100vh;
+    padding: 30px 20px;
+    color: #fff;
+  }
+  h1 {
+    text-align: center;
+    font-size: 2.2rem;
+    margin-bottom: 8px;
+    text-shadow: 0 2px 4px rgba(0,0,0,.3);
+  }
+  .subtitle {
+    text-align: center;
+    font-size: 1rem;
+    opacity: .85;
+    margin-bottom: 30px;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 18px;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+  .card {
+    background: rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 16px;
+    padding: 20px;
+    transition: transform .2s, box-shadow .2s;
+    box-shadow: 0 4px 20px rgba(0,0,0,.15);
+  }
+  .card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 30px rgba(0,0,0,.3);
+  }
+  .rank {
+    display: inline-block;
+    background: rgba(255, 215, 0, 0.25);
+    color: #ffd700;
+    font-size: .8rem;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 20px;
+    margin-bottom: 10px;
+  }
+  .city {
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin-bottom: 2px;
+  }
+  .country {
+    font-size: .9rem;
+    opacity: .75;
+    margin-bottom: 14px;
+  }
+  .weather-main {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+  .temp {
+    font-size: 2.4rem;
+    font-weight: 300;
+  }
+  .icon {
+    font-size: 2.8rem;
+  }
+  .condition {
+    font-size: .95rem;
+    opacity: .9;
+    margin-bottom: 12px;
+  }
+  .details {
+    display: flex;
+    justify-content: space-between;
+    font-size: .85rem;
+    opacity: .8;
+    border-top: 1px solid rgba(255,255,255,.15);
+    padding-top: 10px;
+  }
+  .loading, .error {
+    text-align: center;
+    opacity: .7;
+    padding: 15px 0;
+  }
+  .error { color: #ffb3b3; font-size: .85rem; }
+  footer {
+    text-align: center;
+    margin-top: 30px;
+    font-size: .8rem;
+    opacity: .6;
+  }
+  footer a { color: #ffd700; text-decoration: none; }
+</style>
+</head>
+<body>
+
+<h1>🌍 Clima en Vivo</h1>
+<p class="subtitle">Las 25 ciudades más pobladas del mundo</p>
+
+<div class="grid" id="grid"></div>
+
+<footer>
+  Datos provistos por <a href="https://open-meteo.com/" target="_blank">Open-Meteo</a>
+</footer>
+
+<script>
+const cities = [
+  { name: "Tokio",          country: "Japón",           lat: 35.6762, lon: 139.6503 },
+  { name: "Delhi",          country: "India",           lat: 28.7041, lon: 77.1025  },
+  { name: "Shanghái",       country: "China",           lat: 31.2304, lon: 121.4737 },
+  { name: "São Paulo",      country: "Brasil",          lat: -23.5505, lon: -46.6333 },
+  { name: "Ciudad de México", country: "México",        lat: 19.4326, lon: -99.1332 },
+  { name: "El Cairo",       country: "Egipto",          lat: 30.0444, lon: 31.2357  },
+  { name: "Daca",           country: "Bangladesh",      lat: 23.8103, lon: 90.4125  },
+  { name: "Bombay",         country: "India",           lat: 19.0760, lon: 72.8777  },
+  { name: "Pekín",          country: "China",           lat: 39.9042, lon: 116.4074 },
+  { name: "Osaka",          country: "Japón",           lat: 34.6937, lon: 135.5023 },
+  { name: "Nueva York",     country: "EE. UU.",         lat: 40.7128, lon: -74.0060 },
+  { name: "Karachi",        country: "Pakistán",        lat: 24.8607, lon: 67.0011  },
+  { name: "Buenos Aires",   country: "Argentina",       lat: -34.6037, lon: -58.3816 },
+  { name: "Chongqing",      country: "China",           lat: 29.4316, lon: 106.9123 },
+  { name: "Estambul",       country: "Turquía",         lat: 41.0082, lon: 28.9784  },
+  { name: "Calcuta",        country: "India",           lat: 22.5726, lon: 88.3639  },
+  { name: "Manila",         country: "Filipinas",       lat: 14.5995, lon: 120.9842 },
+  { name: "Lagos",          country: "Nigeria",         lat: 6.5244,  lon: 3.3792   },
+  { name: "Río de Janeiro", country: "Brasil",          lat: -22.9068, lon: -43.1729 },
+  { name: "Tianjin",        country: "China",           lat: 39.3434, lon: 117.3616 },
+  { name: "Cantón",         country: "China",           lat: 23.1291, lon: 113.2644 },
+  { name: "Lahore",         country: "Pakistán",        lat: 31.5204, lon: 74.3587  },
+  { name: "Moscú",          country: "Rusia",           lat: 55.7558, lon: 37.6176  },
+  { name: "Shenzhen",       country: "China",           lat: 22.5431, lon: 114.0579 },
+  { name: "Bangalore",      country: "India",           lat: 12.9716, lon: 77.5946  }
+];
+
+const weatherCodes = {
+  0:  { icon: "☀️", desc: "Despejado" },
+  1:  { icon: "🌤️", desc: "Mayormente despejado" },
+  2:  { icon: "⛅", desc: "Parcialmente nublado" },
+  3:  { icon: "☁️", desc: "Nublado" },
+  45: { icon: "🌫️", desc: "Niebla" },
+  48: { icon: "🌫️", desc: "Niebla con escarcha" },
+  51: { icon: "🌦️", desc: "Llovizna ligera" },
+  53: { icon: "🌦️", desc: "Llovizna moderada" },
+  55: { icon: "🌦️", desc: "Llovizna intensa" },
+  61: { icon: "🌧️", desc: "Lluvia ligera" },
+  63: { icon: "🌧️", desc: "Lluvia moderada" },
+  65: { icon: "🌧️", desc: "Lluvia intensa" },
+  71: { icon: "🌨️", desc: "Nieve ligera" },
+  73: { icon: "🌨️", desc: "Nieve moderada" },
+  75: { icon: "❄️", desc: "Nieve intensa" },
+  77: { icon: "❄️", desc: "Granizo de nieve" },
+  80: { icon: "🌧️", desc: "Chubascos ligeros" },
+  81: { icon: "🌧️", desc: "Chubascos moderados" },
+  82: { icon: "⛈️", desc: "Chubascos violentos" },
+  85: { icon: "🌨️", desc: "Chubascos de nieve" },
+  86: { icon: "🌨️", desc: "Chubascos de nieve fuertes" },
+  95: { icon: "⛈️", desc: "Tormenta" },
+  96: { icon: "⛈️", desc: "Tormenta con granizo" },
+  99: { icon: "⛈️", desc: "Tormenta fuerte con granizo" }
+};
+
+const grid = document.getElementById("grid");
+
+cities.forEach((city, i) => {
+  const card = document.createElement("div");
+  card.className = "card";
+  card.id = `card-${i}`;
+  card.innerHTML = `
+    <span class="rank">#${i + 1}</span>
+    <div class="city">${city.name}</div>
+    <div class="country">${city.country}</div>
+    <div class="loading">Cargando...</div>
+  `;
+  grid.appendChild(card);
+});
+
+async function fetchWeather(city, i) {
+  const url = `https://api.open-meteo.com/v1/forecast?latitude=${city.lat}&longitude=${city.lon}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m&timezone=auto`;
+  try {
+    const res = await fetch(url);
+    if (!res.ok) throw new Error("Error HTTP");
+    const data = await res.json();
+    const c = data.current;
+    const w = weatherCodes[c.weather_code] || { icon: "❓", desc: "N/D" };
+
+    document.getElementById(`card-${i}`).innerHTML = `
+      <span class="rank">#${i + 1}</span>
+      <div class="city">${city.name}</div>
+      <div class="country">${city.country}</div>
+      <div class="weather-main">
+        <div class="temp">${Math.round(c.temperature_2m)}°C</div>
+        <div class="icon">${w.icon}</div>
+      </div>
+      <div class="condition">${w.desc}</div>
+      <div class="details">
+        <span>💧 ${c.relative_humidity_2m}%</span>
+        <span>💨 ${Math.round(c.wind_speed_10m)} km/h</span>
+      </div>
+    `;
+  } catch (err) {
+    const el = document.getElementById(`card-${i}`);
+    const loading = el.querySelector(".loading");
+    if (loading) loading.outerHTML = `<div class="error">⚠️ No se pudo cargar</div>`;
+  }
+}
+
+cities.forEach((city, i) => fetchWeather(city, i));
+</script>
+
+</body>
+</html>
