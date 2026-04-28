@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { runModel } from "@/lib/pyodide-client";
 import type {
   LineChartBlock,
   ModelDefinition,
@@ -16,10 +17,6 @@ type SolveData = {
   [key: string]: unknown;
 };
 
-type SolveSuccess = { ok: true; data: SolveData };
-type SolveFailure = { ok: false; error: string; detail?: string };
-type SolveResponse = SolveSuccess | SolveFailure;
-
 type FormValues = Record<string, number | string>;
 
 export function ModelRunner({ model }: { model: ModelDefinition }) {
@@ -31,6 +28,7 @@ export function ModelRunner({ model }: { model: ModelDefinition }) {
   const [status, setStatus] = useState<"idle" | "loading" | "ok" | "error">(
     "idle",
   );
+  const [progress, setProgress] = useState<string>("");
   const [data, setData] = useState<SolveData | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -51,29 +49,17 @@ export function ModelRunner({ model }: { model: ModelDefinition }) {
     setStatus("loading");
     setError(null);
     setData(null);
+    setProgress("");
 
     try {
-      const res = await fetch(`/api/solver/${model.slug}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(values),
-      });
-
-      const json = (await res.json().catch(() => null)) as SolveResponse | null;
-
-      if (!res.ok || !json || json.ok === false) {
-        const message =
-          json && json.ok === false
-            ? `${json.error}${json.detail ? `\n${json.detail}` : ""}`
-            : `HTTP ${res.status}`;
-        throw new Error(message);
-      }
-
-      setData(json.data);
+      const result = await runModel<SolveData>(model.slug, values, setProgress);
+      setData(result);
       setStatus("ok");
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err));
       setStatus("error");
+    } finally {
+      setProgress("");
     }
   }
 
@@ -120,7 +106,9 @@ export function ModelRunner({ model }: { model: ModelDefinition }) {
         {status === "idle" && (
           <p className="muted">Cargá los parámetros y ejecutá el modelo.</p>
         )}
-        {status === "loading" && <p>Resolviendo en el servidor…</p>}
+        {status === "loading" && (
+          <p className="muted">{progress || "Resolviendo…"}</p>
+        )}
         {status === "error" && (
           <div className="error">
             <strong>Error al resolver el modelo</strong>
