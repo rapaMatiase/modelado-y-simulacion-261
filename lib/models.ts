@@ -203,6 +203,95 @@ export const MODELS: ModelDefinition[] = [
       },
     ],
   },
+
+  {
+    slug: "fixed-point",
+    name: "Punto Fijo",
+    description:
+      "Encuentra una raíz iterando xₙ₊₁ = g(xₙ) a partir de un valor inicial. Requiere reescribir f(x) = 0 como x = g(x).",
+    params: [
+      {
+        name: "expression",
+        label: "Función g(x)",
+        type: "string",
+        default: "cos(x) + x",
+        placeholder: "Ej: cos(x) + x",
+        description:
+          "Forma despejada x = g(x). Variable: x. Funciones permitidas: sin, cos, tan, exp, log, log10, sqrt, abs, pow. Constantes: pi, e.",
+      },
+      {
+        name: "x0",
+        label: "Valor inicial (x₀)",
+        type: "number",
+        default: 1,
+        step: 0.1,
+        description: "Punto de partida cercano a la raíz sospechada.",
+      },
+      {
+        name: "tolerance",
+        label: "Tolerancia (ε)",
+        type: "number",
+        default: 1e-6,
+        min: 1e-15,
+        step: 1e-6,
+        description: "Criterio: |xₙ₊₁ − xₙ| < ε.",
+      },
+      {
+        name: "max_iter",
+        label: "Iteraciones máximas",
+        type: "number",
+        default: 100,
+        min: 1,
+        max: 1000,
+        step: 1,
+      },
+    ],
+    output: [
+      {
+        kind: "scalar",
+        metadataKey: "root",
+        label: "Raíz aproximada",
+        format: "number",
+      },
+      {
+        kind: "scalar",
+        metadataKey: "iterations",
+        label: "Iteraciones",
+        format: "integer",
+      },
+      {
+        kind: "scalar",
+        metadataKey: "converged",
+        label: "Convergió",
+        format: "boolean",
+      },
+      {
+        kind: "scalar",
+        metadataKey: "g_prime_abs",
+        label: "|g'(raíz)|",
+        format: "scientific",
+      },
+      {
+        kind: "line-chart",
+        xKey: "i",
+        yKey: "x",
+        xLabel: "Iteración n",
+        yLabel: "xₙ",
+      },
+      {
+        kind: "table",
+        title: "Iteraciones",
+        dataKey: "table",
+        columns: [
+          { key: "i", label: "i", format: "integer" },
+          { key: "x_prev", label: "xₙ", format: "number" },
+          { key: "x_new", label: "xₙ₊₁ = g(xₙ)", format: "number" },
+          { key: "abs_error", label: "|Δx|", format: "scientific" },
+          { key: "rel_error", label: "|Δx|/|xₙ₊₁|", format: "scientific" },
+        ],
+      },
+    ],
+  },
 ];
 
 export function getModel(slug: string): ModelDefinition | undefined {

@@ -440,6 +440,13 @@ button[type="submit"]:hover:enabled {
   font-family: inherit;
 }
 
+.math-sub {
+  font-size: 0.75em;
+  font-style: normal;
+  vertical-align: sub;
+  margin-left: 1px;
+}
+
 .frac {
   display: inline-flex;
   flex-direction: column;

@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 
 export function Theory({ slug }: { slug: string }) {
   if (slug === "bisection") return <BisectionTheory />;
+  if (slug === "fixed-point") return <FixedPointTheory />;
   return null;
 }
 
@@ -75,6 +76,109 @@ function BisectionTheory() {
       </ol>
     </section>
   );
+}
+
+function FixedPointTheory() {
+  return (
+    <section className="theory">
+      <h3>Teoría</h3>
+      <h4>Paso a Paso del Método del Punto Fijo</h4>
+      <ol className="theory-steps">
+        <li>
+          <strong>Transformar la ecuación:</strong> partiendo de la función
+          original <Math><Var>f</Var>(<Var>x</Var>) = 0</Math>, despejá una{" "}
+          <Var>x</Var> para obtener la forma:
+          <div className="display-eq">
+            <Math>
+              <Var>x</Var> = <Var>g</Var>(<Var>x</Var>)
+            </Math>
+          </div>
+          Puede haber varias formas de despejar <Var>x</Var>, pero no todas
+          servirán para que el método converja.
+        </li>
+        <li>
+          <strong>Elegir un valor inicial (<Math><Var>x</Var><Sub>0</Sub></Math>):</strong>{" "}
+          seleccioná un punto de partida que esté cerca de donde sospechás que
+          está la raíz.
+        </li>
+        <li>
+          <strong>Proceso Iterativo:</strong> aplicá la fórmula de recurrencia
+          para obtener las siguientes aproximaciones:
+          <div className="display-eq">
+            <Math>
+              <Var>x</Var><Sub>1</Sub> = <Var>g</Var>(<Var>x</Var><Sub>0</Sub>),{" "}
+              <Var>x</Var><Sub>2</Sub> = <Var>g</Var>(<Var>x</Var><Sub>1</Sub>),{" "}
+              <Var>x</Var><Sub>3</Sub> = <Var>g</Var>(<Var>x</Var><Sub>2</Sub>), …
+            </Math>
+          </div>
+          y, en general,{" "}
+          <Math>
+            <Var>x</Var><Sub>i+1</Sub> = <Var>g</Var>(<Var>x</Var><Sub>i</Sub>)
+          </Math>
+          .
+        </li>
+        <li>
+          <strong>Criterio de Convergencia (Condición de Taylor):</strong> para
+          saber si el método va a llegar a la raíz, en el intervalo de búsqueda
+          se debe cumplir:
+          <div className="display-eq">
+            <Math>
+              | <Var>g</Var>′(<Var>x</Var>) | &lt; 1
+            </Math>
+          </div>
+          Si el valor absoluto de la derivada es menor a 1, el método{" "}
+          <em>converge</em>. Si es mayor, el método <em>diverge</em>.
+        </li>
+        <li>
+          <strong>Control de Error y Detención:</strong> en cada paso, calculá
+          el error para saber cuándo parar:
+          <ul className="theory-substeps">
+            <li>
+              <strong>Error absoluto:</strong>{" "}
+              <Math>
+                | <Var>x</Var><Sub>i+1</Sub> − <Var>x</Var><Sub>i</Sub> | &lt; ε
+              </Math>
+            </li>
+            <li>
+              <strong>Error relativo:</strong>{" "}
+              <Math>
+                <Frac
+                  num={
+                    <>
+                      | <Var>x</Var><Sub>i+1</Sub> − <Var>x</Var><Sub>i</Sub> |
+                    </>
+                  }
+                  den={
+                    <>
+                      | <Var>x</Var><Sub>i+1</Sub> |
+                    </>
+                  }
+                />{" "}
+                &lt; ε
+              </Math>
+            </li>
+          </ul>
+          O detenerse al alcanzar el número máximo de iteraciones permitido.
+        </li>
+      </ol>
+      <h4>Resumen Visual</h4>
+      <p>
+        El método busca la intersección entre la recta{" "}
+        <Math>
+          <Var>y</Var> = <Var>x</Var>
+        </Math>{" "}
+        y la curva de la función despejada{" "}
+        <Math>
+          <Var>y</Var> = <Var>g</Var>(<Var>x</Var>)
+        </Math>
+        .
+      </p>
+    </section>
+  );
+}
+
+function Sub({ children }: { children: ReactNode }) {
+  return <sub className="math-sub">{children}</sub>;
 }
 
 function Var({ children }: { children: ReactNode }) {
