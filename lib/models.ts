@@ -107,7 +107,7 @@ export const MODELS: ModelDefinition[] = [
 
   {
     slug: "bisection",
-    name: "Bisección",
+    name: "Búsqueda binaria (Bisección)",
     description:
       "Encuentra una raíz de f(x) = 0 en el intervalo [a, b] mediante búsqueda binaria, validando previamente el teorema de Bolzano.",
     params: [
