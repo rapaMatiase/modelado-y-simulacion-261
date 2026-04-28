@@ -4,6 +4,7 @@ export function Theory({ slug }: { slug: string }) {
   if (slug === "bisection") return <BisectionTheory />;
   if (slug === "fixed-point") return <FixedPointTheory />;
   if (slug === "newton-raphson") return <NewtonRaphsonTheory />;
+  if (slug === "aitken") return <AitkenTheory />;
   return null;
 }
 
@@ -271,6 +272,108 @@ function NewtonRaphsonTheory() {
             <Sub>n</Sub>| &lt; ε )
           </Math>{" "}
           o alcances el máximo de iteraciones.
+        </li>
+      </ol>
+    </section>
+  );
+}
+
+function AitkenTheory() {
+  return (
+    <section className="theory">
+      <h3>Teoría</h3>
+      <h4>Proceso Δ² de Aitken</h4>
+      <p>
+        Este no es un método para buscar raíces desde cero, sino una técnica
+        para <strong>acelerar una secuencia que ya está convergiendo
+        lentamente</strong> (como la del Punto Fijo).
+      </p>
+      <h4>Paso a Paso</h4>
+      <ol className="theory-steps">
+        <li>
+          <strong>Generar tres valores consecutivos:</strong> necesitás tres
+          aproximaciones sucesivas de tu método actual:{" "}
+          <Math>
+            <Var>x</Var>
+            <Sub>n</Sub>, <Var>x</Var>
+            <Sub>n+1</Sub>, <Var>x</Var>
+            <Sub>n+2</Sub>
+          </Math>
+          .
+        </li>
+        <li>
+          <strong>Calcular las diferencias (Deltas):</strong>
+          <div className="display-eq">
+            <Math>
+              Δ<Var>x</Var>
+              <Sub>n</Sub> = <Var>x</Var>
+              <Sub>n+1</Sub> − <Var>x</Var>
+              <Sub>n</Sub>
+            </Math>
+          </div>
+          <div className="display-eq">
+            <Math>
+              Δ²<Var>x</Var>
+              <Sub>n</Sub> = <Var>x</Var>
+              <Sub>n+2</Sub> − 2<Var>x</Var>
+              <Sub>n+1</Sub> + <Var>x</Var>
+              <Sub>n</Sub>
+            </Math>
+          </div>
+        </li>
+        <li>
+          <strong>Aplicar el "Salto Predictivo":</strong> usá la fórmula de
+          Aitken para calcular una mejor aproximación{" "}
+          <Math>x̂</Math>:
+          <div className="display-eq">
+            <Math>
+              x̂ = <Var>x</Var>
+              <Sub>n</Sub> −{" "}
+              <Frac
+                num={
+                  <>
+                    (Δ<Var>x</Var>
+                    <Sub>n</Sub>)²
+                  </>
+                }
+                den={
+                  <>
+                    Δ²<Var>x</Var>
+                    <Sub>n</Sub>
+                  </>
+                }
+              />
+            </Math>
+          </div>
+          También se puede expresar como:
+          <div className="display-eq">
+            <Math>
+              x̂ = <Var>x</Var>
+              <Sub>n</Sub> −{" "}
+              <Frac
+                num={
+                  <>
+                    (<Var>x</Var>
+                    <Sub>n+1</Sub> − <Var>x</Var>
+                    <Sub>n</Sub>)²
+                  </>
+                }
+                den={
+                  <>
+                    <Var>x</Var>
+                    <Sub>n+2</Sub> − 2<Var>x</Var>
+                    <Sub>n+1</Sub> + <Var>x</Var>
+                    <Sub>n</Sub>
+                  </>
+                }
+              />
+            </Math>
+          </div>
+        </li>
+        <li>
+          <strong>Resultado:</strong> el valor obtenido <Math>x̂</Math> suele
+          estar mucho más cerca del límite final que los tres valores
+          originales, ahorrando muchas iteraciones intermedias.
         </li>
       </ol>
     </section>

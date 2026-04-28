@@ -337,6 +337,89 @@ export const MODELS: ModelDefinition[] = [
       },
     ],
   },
+
+  {
+    slug: "aitken",
+    name: "Aitken Δ²",
+    description:
+      "Acelera una iteración de punto fijo aplicando el salto predictivo de Aitken cada tres evaluaciones de g(x).",
+    params: [
+      {
+        name: "expression",
+        label: "Función g(x)",
+        type: "string",
+        default: "sqrt(2*x - 1)",
+        placeholder: "Ej: sqrt(2*x - 1)",
+        description:
+          "Forma despejada x = g(x). Variable: x. Funciones permitidas: sin, cos, tan, exp, log, log10, sqrt, abs, pow. Constantes: pi, e.",
+      },
+      {
+        name: "x0",
+        label: "Valor inicial (x₀)",
+        type: "number",
+        default: 2,
+        step: 0.1,
+      },
+      {
+        name: "tolerance",
+        label: "Tolerancia (ε)",
+        type: "number",
+        default: 1e-6,
+        min: 1e-15,
+        step: 1e-6,
+        description: "Criterio: |x̂ − xₙ| < ε.",
+      },
+      {
+        name: "max_iter",
+        label: "Iteraciones máximas",
+        type: "number",
+        default: 100,
+        min: 1,
+        max: 1000,
+        step: 1,
+      },
+    ],
+    output: [
+      {
+        kind: "scalar",
+        metadataKey: "root",
+        label: "Raíz aproximada",
+        format: "number",
+      },
+      {
+        kind: "scalar",
+        metadataKey: "iterations",
+        label: "Iteraciones",
+        format: "integer",
+      },
+      {
+        kind: "scalar",
+        metadataKey: "converged",
+        label: "Convergió",
+        format: "boolean",
+      },
+      {
+        kind: "line-chart",
+        xKey: "i",
+        yKey: "x",
+        xLabel: "Iteración n",
+        yLabel: "x̂ₙ",
+      },
+      {
+        kind: "table",
+        title: "Iteraciones",
+        dataKey: "table",
+        columns: [
+          { key: "i", label: "i", format: "integer" },
+          { key: "x_n", label: "xₙ", format: "number" },
+          { key: "x_n1", label: "x₁ = g(xₙ)", format: "number" },
+          { key: "x_n2", label: "x₂ = g(x₁)", format: "number" },
+          { key: "x_hat", label: "x̂ acelerado", format: "number" },
+          { key: "error", label: "error", format: "scientific" },
+        ],
+      },
+    ],
+  },
 ];
 
 export function getModel(slug: string): ModelDefinition | undefined {
