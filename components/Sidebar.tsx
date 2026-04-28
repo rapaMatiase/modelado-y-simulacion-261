@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { MODELS } from "@/lib/models";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 export function Sidebar() {
   return (
@@ -22,6 +23,7 @@ export function Sidebar() {
         </ul>
       </nav>
       <footer className="sidebar-footer">
+        <ThemeToggle />
         <small>Next.js · Python · Vercel</small>
       </footer>
     </aside>
