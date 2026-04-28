@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 export function Theory({ slug }: { slug: string }) {
   if (slug === "bisection") return <BisectionTheory />;
   if (slug === "fixed-point") return <FixedPointTheory />;
+  if (slug === "newton-raphson") return <NewtonRaphsonTheory />;
   return null;
 }
 
@@ -173,6 +174,105 @@ function FixedPointTheory() {
         </Math>
         .
       </p>
+    </section>
+  );
+}
+
+function NewtonRaphsonTheory() {
+  return (
+    <section className="theory">
+      <h3>Teoría</h3>
+      <h4>Método de Newton-Raphson</h4>
+      <p>
+        Se usa para encontrar la raíz de una función{" "}
+        <Math>
+          <Var>f</Var>(<Var>x</Var>) = 0
+        </Math>{" "}
+        mediante una aproximación lineal (tangentes).
+      </p>
+      <h4>Paso a Paso</h4>
+      <ol className="theory-steps">
+        <li>
+          <strong>Definir la función y su derivada:</strong> tenés que conocer{" "}
+          <Math>
+            <Var>f</Var>(<Var>x</Var>)
+          </Math>{" "}
+          y calcular analíticamente su derivada{" "}
+          <Math>
+            <Var>f</Var>′(<Var>x</Var>)
+          </Math>
+          .
+        </li>
+        <li>
+          <strong>
+            Elegir un valor inicial (
+            <Math>
+              <Var>x</Var>
+              <Sub>n</Sub>
+            </Math>
+            ):
+          </strong>{" "}
+          seleccioná un punto de partida lo más cerca posible de la raíz
+          sospechada.
+        </li>
+        <li>
+          <strong>Aplicar la fórmula iterativa:</strong> calculá el siguiente
+          valor (
+          <Math>
+            <Var>x</Var>
+            <Sub>n+1</Sub>
+          </Math>
+          ) usando la pendiente de la tangente:
+          <div className="display-eq">
+            <Math>
+              <Var>x</Var>
+              <Sub>n+1</Sub> = <Var>x</Var>
+              <Sub>n</Sub> −{" "}
+              <Frac
+                num={
+                  <>
+                    <Var>f</Var>(<Var>x</Var>
+                    <Sub>n</Sub>)
+                  </>
+                }
+                den={
+                  <>
+                    <Var>f</Var>′(<Var>x</Var>
+                    <Sub>n</Sub>)
+                  </>
+                }
+              />
+            </Math>
+          </div>
+        </li>
+        <li>
+          <strong>Verificar condiciones críticas:</strong>
+          <ul className="theory-substeps">
+            <li>
+              Si{" "}
+              <Math>
+                <Var>f</Var>′(<Var>x</Var>
+                <Sub>n</Sub>) = 0
+              </Math>
+              , el método falla (división por cero).
+            </li>
+            <li>
+              Si el punto inicial está muy lejos, el método puede{" "}
+              <em>diverger</em>.
+            </li>
+          </ul>
+        </li>
+        <li>
+          <strong>Control de parada:</strong> repetí el proceso hasta que la
+          diferencia entre iteraciones sea menor a la tolerancia{" "}
+          <Math>
+            ( |<Var>x</Var>
+            <Sub>n+1</Sub> − <Var>x</Var>
+            <Sub>n</Sub>| &lt; ε )
+          </Math>{" "}
+          o alcances el máximo de iteraciones.
+        </li>
+      </ol>
     </section>
   );
 }
