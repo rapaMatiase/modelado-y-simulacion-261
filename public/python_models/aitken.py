@@ -91,6 +91,24 @@ def _make_function(expr: str) -> Callable[[float], float]:
     return g
 
 
+def _simple_fixed_point(g: Callable[[float], float], x0: float, tol: float, max_iter: int) -> tuple[float | None, list[float], int, bool]:
+    """Plain fixed-point iteration without Aitken acceleration."""
+    history = [x0]
+    x = x0
+    for i in range(1, max_iter + 1):
+        try:
+            x_new = g(x)
+        except ValueError:
+            return None, history, i, False
+        if not math.isfinite(x_new):
+            return None, history, i, False
+        history.append(x_new)
+        if abs(x_new - x) < tol:
+            return x_new, history, i, True
+        x = x_new
+    return None, history, max_iter, False
+
+
 def solve(params: dict[str, Any]) -> dict[str, Any]:
     expr = str(params.get("expression", "sqrt(2*x - 1)")).strip()
     if not expr:
@@ -107,7 +125,7 @@ def solve(params: dict[str, Any]) -> dict[str, Any]:
 
     g = _make_function(expr)
 
-    iterations: list[dict[str, float]] = []
+    iterations: list[dict[str, Any]] = []
     x = x0
     root: float | None = None
     converged = False
@@ -118,38 +136,35 @@ def solve(params: dict[str, Any]) -> dict[str, Any]:
         x2 = g(x1)
 
         if not (math.isfinite(x1) and math.isfinite(x2)):
-            iterations.append(
-                {
-                    "i": i,
-                    "x_n": x,
-                    "x_n1": x1,
-                    "x_n2": x2,
-                    "x_hat": float("nan"),
-                    "error": float("nan"),
-                }
-            )
+            iterations.append({
+                "i": i, "x_n": x, "x_n1": x1, "x_n2": x2,
+                "denominador": float("nan"),
+                "x_hat": float("nan"), "error": float("nan"),
+                "nota": "g(x) no finita — divergencia",
+            })
             diverged = True
             break
 
         denom = x2 - 2.0 * x1 + x
         if abs(denom) > 1e-15:
             x_hat = x - (x1 - x) ** 2 / denom
+            nota = "Aitken aplicado"
         else:
-            # Aitken collapses → fall back to the plain iterate
             x_hat = x2
+            nota = "denom ≈ 0 → uso x₂"
 
         error = abs(x_hat - x)
 
-        iterations.append(
-            {
-                "i": i,
-                "x_n": x,
-                "x_n1": x1,
-                "x_n2": x2,
-                "x_hat": x_hat,
-                "error": error,
-            }
-        )
+        iterations.append({
+            "i": i,
+            "x_n": x,
+            "x_n1": x1,
+            "x_n2": x2,
+            "denominador": denom,
+            "x_hat": x_hat,
+            "error": error,
+            "nota": nota,
+        })
 
         if error < tol:
             root = x_hat
@@ -161,19 +176,48 @@ def solve(params: dict[str, Any]) -> dict[str, Any]:
     if root is None:
         root = x
 
-    # Iteration trajectory: i vs accelerated value at that iteration
-    series: list[dict[str, float]] = [{"i": 0, "x": x0}]
+    # Iteration trajectory for Aitken: index vs accelerated value
+    series_aitken: list[dict[str, float]] = [{"i": 0, "x": float(x0), "metodo": "aitken"}]
     for row in iterations:
         if math.isfinite(row.get("x_hat", float("nan"))):
-            series.append({"i": float(row["i"]), "x": float(row["x_hat"])})
+            series_aitken.append({
+                "i": float(row["i"]),
+                "x": float(row["x_hat"]),
+                "metodo": "aitken",
+            })
+
+    # Plain fixed-point reference for comparison
+    simple_root, simple_history, simple_iters, simple_converged = _simple_fixed_point(
+        g, x0, tol, max(max_iter * 5, 200)
+    )
+    simple_history_data = [
+        {"i": idx, "x": float(val)} for idx, val in enumerate(simple_history)
+    ]
+
+    series = series_aitken
+
+    g_root = float(g(root)) if math.isfinite(root) else float("nan")
+    iter_aitken = len(iterations)
+    if simple_iters and simple_converged and simple_iters > 0:
+        reduction_pct = 100.0 * (simple_iters - iter_aitken) / simple_iters
+        comp_text = f"Punto fijo: {simple_iters} iter · Aitken: {iter_aitken} iter ({reduction_pct:.1f}% menos)"
+    elif simple_converged is False:
+        comp_text = f"Aitken: {iter_aitken} iter · Punto fijo simple no convergió"
+    else:
+        comp_text = f"Aitken: {iter_aitken} iter · Punto fijo: {simple_iters} iter"
 
     return {
         "series": series,
+        "simple_history": simple_history_data,
         "table": iterations,
         "metadata": {
             "root": float(root),
-            "g_root": float(g(root)) if math.isfinite(root) else float("nan"),
-            "iterations": len(iterations),
+            "g_root": g_root,
+            "g_root_diff": float(abs(g_root - root)) if math.isfinite(g_root) else float("nan"),
+            "iterations": iter_aitken,
+            "iterations_simple": int(simple_iters),
+            "simple_converged": bool(simple_converged),
+            "comparison": comp_text,
             "converged": bool(converged),
             "diverged": bool(diverged),
             "expression": expr,
