@@ -89,7 +89,7 @@ export function ModelRunner({ model }: { model: ModelDefinition }) {
                   onChange={(e) => updateString(p.name, e.target.value)}
                   spellCheck={false}
                   autoComplete="off"
-                  required
+                  required={!p.optional}
                 />
               )}
               {p.description && <small>{p.description}</small>}

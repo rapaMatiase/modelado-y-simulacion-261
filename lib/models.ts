@@ -16,6 +16,7 @@ export type StringParam = {
   default: string;
   placeholder?: string;
   description?: string;
+  optional?: boolean;
 };
 
 export type ModelParam = NumberParam | StringParam;
@@ -724,19 +725,43 @@ MODELS.push(
     slug: "monte-carlo",
     name: "Método de Monte Carlo",
     description:
-      "Aproxima ∫ₐᵇ f(x) dx por muestreo aleatorio uniforme: Î = (b−a)·(1/n)·Σ f(xᵢ). Reporta intervalo de confianza al 95%.",
+      "Estima integrales simples ∫ₐᵇ f(x) dx o dobles ∫∫ f(x,y) dy dx por muestreo aleatorio uniforme. Reporta IC, σ², n mínimo teórico y error real si se conoce el valor exacto.",
     params: [
       {
+        name: "kind",
+        label: "Tipo de integral (simple | doble)",
+        type: "string",
+        default: "simple",
+        placeholder: "simple o doble",
+        description: "'simple' usa f(x) en [a,b]. 'doble' usa f(x,y) en [a,b]×[c,d].",
+      },
+      {
         name: "expression",
-        label: "Función f(x)",
+        label: "Función f(x) o f(x,y)",
         type: "string",
         default: "exp(-x**2)",
-        placeholder: "Ej: exp(-x**2)",
+        placeholder: "Ej: exp(-x**2)  o  exp(x+y)",
         description:
-          "Variable: x. Funciones permitidas: sin, cos, tan, exp, log, log10, sqrt, abs, pow. Constantes: pi, e.",
+          "Variables: x (y para doble). Funciones: sin, cos, tan, exp, log, log10, sqrt, abs, pow. Constantes: pi, e.",
       },
-      { name: "a", label: "Límite inferior (a)", type: "number", default: 0, step: 0.1 },
-      { name: "b", label: "Límite superior (b)", type: "number", default: 1, step: 0.1 },
+      { name: "a", label: "Límite inferior x (a)", type: "number", default: 0, step: 0.1 },
+      { name: "b", label: "Límite superior x (b)", type: "number", default: 1, step: 0.1 },
+      {
+        name: "c",
+        label: "Límite inferior y (c) — solo doble",
+        type: "number",
+        default: 0,
+        step: 0.1,
+        description: "Ignorado si la integral es simple.",
+      },
+      {
+        name: "d",
+        label: "Límite superior y (d) — solo doble",
+        type: "number",
+        default: 1,
+        step: 0.1,
+        description: "Ignorado si la integral es simple.",
+      },
       {
         name: "n",
         label: "Muestras (n)",
@@ -745,7 +770,17 @@ MODELS.push(
         min: 10,
         max: 5000000,
         step: 1,
-        description: "El error decrece como σ/√n. Para 1 decimal extra, n×100.",
+        description: "El error decrece como σ/√n.",
+      },
+      {
+        name: "confidence",
+        label: "Nivel de confianza (%)",
+        type: "number",
+        default: 95,
+        min: 80,
+        max: 99.7,
+        step: 0.1,
+        description: "Valores soportados: 80, 85, 90, 95, 99, 99.7.",
       },
       {
         name: "seed",
@@ -755,15 +790,36 @@ MODELS.push(
         placeholder: "Vacío = aleatorio",
         description: "Entero para reproducibilidad. Vacío o 'auto' usa azar real.",
       },
+      {
+        name: "exact",
+        label: "Valor exacto (opcional)",
+        type: "string",
+        default: "",
+        placeholder: "Ej: 0.746824",
+        description: "Si lo conocés, se calcula el error real. Vacío para omitir.",
+        optional: true,
+      },
     ],
     output: [
-      { kind: "scalar", metadataKey: "integral", label: "Integral aproximada (Î)", format: "number" },
-      { kind: "scalar", metadataKey: "ic_lo", label: "IC 95% (inf.)", format: "number" },
-      { kind: "scalar", metadataKey: "ic_hi", label: "IC 95% (sup.)", format: "number" },
+      { kind: "scalar", metadataKey: "kind", label: "Tipo", format: "string" },
+      { kind: "scalar", metadataKey: "expression", label: "Función", format: "string" },
+      { kind: "scalar", metadataKey: "integral", label: "Integral estimada (Î)", format: "number" },
+      { kind: "scalar", metadataKey: "ic_lo", label: "IC inf.", format: "number" },
+      { kind: "scalar", metadataKey: "ic_hi", label: "IC sup.", format: "number" },
+      { kind: "scalar", metadataKey: "margin", label: "Margen ±", format: "number" },
+      { kind: "scalar", metadataKey: "mean", label: "Media muestral", format: "number" },
       { kind: "scalar", metadataKey: "sigma", label: "σ (desv. estándar)", format: "number" },
-      { kind: "scalar", metadataKey: "ee", label: "Error estándar", format: "scientific" },
-      { kind: "scalar", metadataKey: "n", label: "Muestras", format: "integer" },
+      { kind: "scalar", metadataKey: "sigma2", label: "σ² (varianza)", format: "number" },
+      { kind: "scalar", metadataKey: "z", label: "z (confianza)", format: "number" },
+      { kind: "scalar", metadataKey: "confidence", label: "Confianza %", format: "number" },
+      { kind: "scalar", metadataKey: "domain_size", label: "Tamaño dominio", format: "number" },
+      { kind: "scalar", metadataKey: "n", label: "n usado", format: "integer" },
+      { kind: "scalar", metadataKey: "n_min", label: "n mínimo teórico", format: "integer" },
+      { kind: "scalar", metadataKey: "sufficient", label: "¿n suficiente?", format: "string" },
       { kind: "scalar", metadataKey: "seed", label: "Semilla", format: "string" },
+      { kind: "scalar", metadataKey: "exact", label: "Valor exacto", format: "number" },
+      { kind: "scalar", metadataKey: "abs_error", label: "Error absoluto", format: "scientific" },
+      { kind: "scalar", metadataKey: "rel_error_pct", label: "Error relativo %", format: "number" },
       { kind: "line-chart", xKey: "x", yKey: "y", xLabel: "x", yLabel: "f(x)" },
       {
         kind: "table",
@@ -774,7 +830,7 @@ MODELS.push(
           { key: "mean", label: "promedio", format: "number" },
           { key: "integral", label: "Î_k", format: "number" },
           { key: "sigma", label: "σ", format: "number" },
-          { key: "ee", label: "EE = σ/√k", format: "scientific" },
+          { key: "margin", label: "margen ±", format: "scientific" },
           { key: "ic_lo", label: "IC inf.", format: "number" },
           { key: "ic_hi", label: "IC sup.", format: "number" },
         ],
