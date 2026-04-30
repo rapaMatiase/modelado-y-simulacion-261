@@ -668,6 +668,67 @@ MODELS.push(
     ],
   },
   {
+    slug: "monte-carlo",
+    name: "Método de Monte Carlo",
+    description:
+      "Aproxima ∫ₐᵇ f(x) dx por muestreo aleatorio uniforme: Î = (b−a)·(1/n)·Σ f(xᵢ). Reporta intervalo de confianza al 95%.",
+    params: [
+      {
+        name: "expression",
+        label: "Función f(x)",
+        type: "string",
+        default: "exp(-x**2)",
+        placeholder: "Ej: exp(-x**2)",
+        description:
+          "Variable: x. Funciones permitidas: sin, cos, tan, exp, log, log10, sqrt, abs, pow. Constantes: pi, e.",
+      },
+      { name: "a", label: "Límite inferior (a)", type: "number", default: 0, step: 0.1 },
+      { name: "b", label: "Límite superior (b)", type: "number", default: 1, step: 0.1 },
+      {
+        name: "n",
+        label: "Muestras (n)",
+        type: "number",
+        default: 10000,
+        min: 10,
+        max: 5000000,
+        step: 1,
+        description: "El error decrece como σ/√n. Para 1 decimal extra, n×100.",
+      },
+      {
+        name: "seed",
+        label: "Semilla (opcional)",
+        type: "string",
+        default: "42",
+        placeholder: "Vacío = aleatorio",
+        description: "Entero para reproducibilidad. Vacío o 'auto' usa azar real.",
+      },
+    ],
+    output: [
+      { kind: "scalar", metadataKey: "integral", label: "Integral aproximada (Î)", format: "number" },
+      { kind: "scalar", metadataKey: "ic_lo", label: "IC 95% (inf.)", format: "number" },
+      { kind: "scalar", metadataKey: "ic_hi", label: "IC 95% (sup.)", format: "number" },
+      { kind: "scalar", metadataKey: "sigma", label: "σ (desv. estándar)", format: "number" },
+      { kind: "scalar", metadataKey: "ee", label: "Error estándar", format: "scientific" },
+      { kind: "scalar", metadataKey: "n", label: "Muestras", format: "integer" },
+      { kind: "scalar", metadataKey: "seed", label: "Semilla", format: "string" },
+      { kind: "line-chart", xKey: "x", yKey: "y", xLabel: "x", yLabel: "f(x)" },
+      {
+        kind: "table",
+        title: "Convergencia (estimador parcial con primeras k muestras)",
+        dataKey: "table",
+        columns: [
+          { key: "k", label: "k", format: "integer" },
+          { key: "mean", label: "promedio", format: "number" },
+          { key: "integral", label: "Î_k", format: "number" },
+          { key: "sigma", label: "σ", format: "number" },
+          { key: "ee", label: "EE = σ/√k", format: "scientific" },
+          { key: "ic_lo", label: "IC inf.", format: "number" },
+          { key: "ic_hi", label: "IC sup.", format: "number" },
+        ],
+      },
+    ],
+  },
+  {
     slug: "simpson-three-eighths",
     name: "Regla de Simpson 3/8",
     description:

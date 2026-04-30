@@ -39,7 +39,7 @@ const SECTIONS: NavSection[] = [
       { label: "Regla de Simpson 1/3", slug: "simpson-one-third" },
       { label: "Regla de Simpson 3/8", slug: "simpson-three-eighths" },
       { label: "Rectángulo medio (Cotes)", slug: "midpoint-rectangle" },
-      { label: "Método de Monte Carlo" },
+      { label: "Método de Monte Carlo", slug: "monte-carlo" },
     ],
   },
 ];

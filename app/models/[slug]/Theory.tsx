@@ -10,6 +10,7 @@ export function Theory({ slug }: { slug: string }) {
   if (slug === "trapezoid") return <TrapezoidTheory />;
   if (slug === "simpson-one-third") return <SimpsonOneThirdTheory />;
   if (slug === "simpson-three-eighths") return <SimpsonThreeEighthsTheory />;
+  if (slug === "monte-carlo") return <MonteCarloTheory />;
   return null;
 }
 
@@ -804,6 +805,109 @@ function SimpsonThreeEighthsTheory() {
           ·<Var>f</Var><Sup>(4)</Sup>(ξ)
         </Math>
         . Mismo orden que Simpson 1/3 con distinta constante.
+      </p>
+    </section>
+  );
+}
+
+function MonteCarloTheory() {
+  return (
+    <section className="theory">
+      <h3>Teoría</h3>
+      <h4>Método de Monte Carlo (1D, promedio muestral)</h4>
+      <p>
+        Técnica estocástica que usa muestreo aleatorio para aproximar
+        integrales. Se apoya en la <em>Ley de los Grandes Números</em>:
+        el promedio muestral converge al valor esperado cuando{" "}
+        <Math><Var>n</Var> → ∞</Math>. Es especialmente útil cuando{" "}
+        <Math><Var>f</Var></Math> no tiene primitiva elemental o el dominio
+        es de alta dimensión.
+      </p>
+      <h4>Fundamento</h4>
+      <p>
+        La integral se reescribe como el largo del intervalo por la
+        esperanza:
+      </p>
+      <div className="display-eq">
+        <Math>
+          <Var>I</Var> = ∫<Sub>a</Sub><Sup>b</Sup>{" "}
+          <Var>f</Var>(<Var>x</Var>) d<Var>x</Var> = (<Var>b</Var> − <Var>a</Var>) · E[<Var>f</Var>(<Var>x</Var>)]
+        </Math>
+      </div>
+      <h4>Paso a Paso</h4>
+      <ol className="theory-steps">
+        <li>
+          <strong>Definir la función y los límites:</strong>{" "}
+          <Math><Var>f</Var>(<Var>x</Var>)</Math>, <Math><Var>a</Var></Math>,{" "}
+          <Math><Var>b</Var></Math> y la cantidad de muestras{" "}
+          <Math><Var>n</Var></Math>.
+        </li>
+        <li>
+          <strong>Generar <Var>n</Var> puntos aleatorios uniformes en{" "}
+          [<Var>a</Var>, <Var>b</Var>]:</strong>{" "}
+          <Math>
+            <Var>x</Var><Sub>i</Sub> = <Var>a</Var> + (<Var>b</Var>−<Var>a</Var>)·<Var>u</Var><Sub>i</Sub>
+          </Math>{" "}
+          con <Math><Var>u</Var><Sub>i</Sub> ∼ Uniforme(0, 1)</Math>.
+        </li>
+        <li>
+          <strong>Evaluar <Math><Var>f</Var>(<Var>x</Var><Sub>i</Sub>)</Math></strong> para cada uno de los <Math><Var>n</Var></Math> puntos.
+        </li>
+        <li>
+          <strong>Calcular el promedio muestral:</strong>{" "}
+          <Math>
+            <Var>x̄</Var> ={" "}
+            <Frac num={<>1</>} den={<Var>n</Var>} />
+            {" "}Σ <Var>f</Var>(<Var>x</Var><Sub>i</Sub>)
+          </Math>
+          .
+        </li>
+        <li>
+          <strong>Estimar la integral:</strong>
+          <div className="display-eq">
+            <Math>
+              <Var>Î</Var> = (<Var>b</Var> − <Var>a</Var>) ·{" "}
+              <Frac num={<>1</>} den={<Var>n</Var>} />
+              {" "}Σ <Var>f</Var>(<Var>x</Var><Sub>i</Sub>)
+            </Math>
+          </div>
+        </li>
+        <li>
+          <strong>Cuantificar la incertidumbre (IC al 95%):</strong>
+          <ul className="theory-substeps">
+            <li>
+              Desviación estándar muestral{" "}
+              <Math>
+                σ ={" "}
+                <Frac
+                  num={<>√(Σ(<Var>f</Var>(<Var>x</Var><Sub>i</Sub>) − <Var>x̄</Var>)²)</>}
+                  den={<><Var>n</Var> − 1</>}
+                />
+              </Math>
+              .
+            </li>
+            <li>
+              Error estándar:{" "}
+              <Math>EE = σ / √<Var>n</Var></Math>.
+            </li>
+            <li>
+              Intervalo de confianza al 95%:{" "}
+              <Math>
+                <Var>Î</Var> ± 1,96 · (<Var>b</Var> − <Var>a</Var>) · EE
+              </Math>
+              .
+            </li>
+          </ul>
+        </li>
+      </ol>
+      <h4>Convergencia</h4>
+      <p>
+        El error decae como <Math>O(1/√<Var>n</Var>)</Math>:{" "}
+        para reducir el ancho del IC a la mitad hay que cuadruplicar{" "}
+        <Var>n</Var>; para ganar un decimal de precisión, multiplicar por
+        100. La gran ventaja: el orden del error es independiente de la
+        dimensión del problema, por lo que Monte Carlo se vuelve
+        competitivo a partir de ~5–8 dimensiones frente a Newton-Cotes.
       </p>
     </section>
   );
