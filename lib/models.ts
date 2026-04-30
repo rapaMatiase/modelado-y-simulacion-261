@@ -420,6 +420,58 @@ export const MODELS: ModelDefinition[] = [
       },
     ],
   },
+
+  {
+    slug: "lagrange",
+    name: "Polinomio de Lagrange",
+    description:
+      "Construye el polinomio interpolante único de grado ≤ n − 1 que pasa por n puntos dados, usando la base de Lagrange.",
+    params: [
+      {
+        name: "x_points",
+        label: "Valores de x (separados por coma)",
+        type: "string",
+        default: "0, 1, 2, 3, 4",
+        placeholder: "Ej: 0, 1, 2, 3, 4",
+        description: "Todos los xᵢ deben ser distintos.",
+      },
+      {
+        name: "y_points",
+        label: "Valores de y (separados por coma)",
+        type: "string",
+        default: "1, 2, 0, 2, 3",
+        placeholder: "Ej: 1, 2, 0, 2, 3",
+        description: "Misma cantidad que los x.",
+      },
+    ],
+    output: [
+      {
+        kind: "scalar",
+        metadataKey: "n_points",
+        label: "Puntos",
+        format: "integer",
+      },
+      {
+        kind: "scalar",
+        metadataKey: "degree",
+        label: "Grado del polinomio",
+        format: "integer",
+      },
+      {
+        kind: "scalar",
+        metadataKey: "polynomial",
+        label: "Polinomio interpolante",
+        format: "string",
+      },
+      {
+        kind: "line-chart",
+        xKey: "x",
+        yKey: "y",
+        xLabel: "x",
+        yLabel: "P(x)",
+      },
+    ],
+  },
 ];
 
 export function getModel(slug: string): ModelDefinition | undefined {

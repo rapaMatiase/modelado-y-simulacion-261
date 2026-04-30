@@ -337,6 +337,13 @@ button[type="submit"]:hover:enabled {
   font-weight: 700;
   color: var(--text);
   font-variant-numeric: tabular-nums;
+  word-break: break-word;
+  white-space: normal;
+  max-width: 100%;
+}
+
+.scalar-card:has(.scalar-value:not(:empty)) {
+  max-width: 100%;
 }
 
 .block-title {

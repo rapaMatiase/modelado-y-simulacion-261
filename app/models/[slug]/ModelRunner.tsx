@@ -196,6 +196,10 @@ function DataTable({ block, data }: { block: TableBlock; data: SolveData }) {
 
 function LineChart({ block, data }: { block: LineChartBlock; data: SolveData }) {
   const series = data.series ?? [];
+  const rawMarkers = data["markers"];
+  const markers = Array.isArray(rawMarkers)
+    ? (rawMarkers as Array<Record<string, number>>)
+    : null;
   if (series.length === 0) {
     return <p className="muted">Sin datos para graficar.</p>;
   }
@@ -206,10 +210,12 @@ function LineChart({ block, data }: { block: LineChartBlock; data: SolveData }) 
 
   const xs = series.map((s) => Number(s[block.xKey] ?? 0));
   const ys = series.map((s) => Number(s[block.yKey] ?? 0));
-  const xMin = Math.min(...xs);
-  const xMax = Math.max(...xs);
-  const yMin = Math.min(0, ...ys);
-  const yMax = Math.max(0, ...ys);
+  const markerXs = markers?.map((m) => Number(m[block.xKey] ?? 0)) ?? [];
+  const markerYs = markers?.map((m) => Number(m[block.yKey] ?? 0)) ?? [];
+  const xMin = Math.min(...xs, ...markerXs);
+  const xMax = Math.max(...xs, ...markerXs);
+  const yMin = Math.min(0, ...ys, ...markerYs);
+  const yMax = Math.max(0, ...ys, ...markerYs);
 
   const sx = (v: number) =>
     PAD + ((v - xMin) / (xMax - xMin || 1)) * (W - 2 * PAD);
@@ -264,6 +270,18 @@ function LineChart({ block, data }: { block: LineChartBlock; data: SolveData }) 
         />
       )}
       <path d={path} fill="none" stroke="#3b82f6" strokeWidth={2} />
+      {markers?.map((m, i) => (
+        <circle
+          key={`m-${i}`}
+          cx={sx(Number(m[block.xKey] ?? 0))}
+          cy={sy(Number(m[block.yKey] ?? 0))}
+          r={4.5}
+          fill="#ef4444"
+          stroke="#ffffff"
+          strokeOpacity={0.4}
+          strokeWidth={1.5}
+        />
+      ))}
       <text x={W / 2} y={H - 10} textAnchor="middle" fontSize={12} fill="#cbd5e1">
         {block.xLabel}
       </text>

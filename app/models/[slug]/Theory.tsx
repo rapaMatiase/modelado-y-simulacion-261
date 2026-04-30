@@ -5,6 +5,7 @@ export function Theory({ slug }: { slug: string }) {
   if (slug === "fixed-point") return <FixedPointTheory />;
   if (slug === "newton-raphson") return <NewtonRaphsonTheory />;
   if (slug === "aitken") return <AitkenTheory />;
+  if (slug === "lagrange") return <LagrangeTheory />;
   return null;
 }
 
@@ -376,6 +377,161 @@ function AitkenTheory() {
           originales, ahorrando muchas iteraciones intermedias.
         </li>
       </ol>
+    </section>
+  );
+}
+
+function LagrangeTheory() {
+  return (
+    <section className="theory">
+      <h3>Teoría</h3>
+      <h4>Polinomio Interpolante de Lagrange</h4>
+      <ol className="theory-steps">
+        <li>
+          <strong>Organizar los datos:</strong> identificá los puntos{" "}
+          <Math>
+            (<Var>x</Var>
+            <Sub>0</Sub>, <Var>y</Var>
+            <Sub>0</Sub>), (<Var>x</Var>
+            <Sub>1</Sub>, <Var>y</Var>
+            <Sub>1</Sub>), …, (<Var>x</Var>
+            <Sub>n</Sub>, <Var>y</Var>
+            <Sub>n</Sub>)
+          </Math>
+          . Todos los <Var>x</Var> deben ser distintos. El grado del polinomio
+          será, como máximo, <Math>n − 1</Math>.
+        </li>
+        <li>
+          <strong>Estructura general:</strong> el polinomio final se construye
+          como una suma ponderada de los <Math><Var>y</Var></Math>:
+          <div className="display-eq">
+            <Math>
+              <Var>P</Var>(<Var>x</Var>) = Σ <Var>y</Var>
+              <Sub>i</Sub> · <Var>L</Var>
+              <Sub>i</Sub>(<Var>x</Var>)
+            </Math>
+          </div>
+        </li>
+        <li>
+          <strong>Calcular los polinomios base (<Math><Var>L</Var><Sub>i</Sub></Math>):</strong>{" "}
+          cada <Math><Var>L</Var><Sub>i</Sub></Math> debe valer 1 cuando{" "}
+          <Math><Var>x</Var> = <Var>x</Var><Sub>i</Sub></Math> y 0 en los demás
+          puntos:
+          <div className="display-eq">
+            <Math>
+              <Var>L</Var>
+              <Sub>i</Sub>(<Var>x</Var>) = Π<Sub>j≠i</Sub>{" "}
+              <Frac
+                num={
+                  <>
+                    <Var>x</Var> − <Var>x</Var>
+                    <Sub>j</Sub>
+                  </>
+                }
+                den={
+                  <>
+                    <Var>x</Var>
+                    <Sub>i</Sub> − <Var>x</Var>
+                    <Sub>j</Sub>
+                  </>
+                }
+              />
+            </Math>
+          </div>
+          <ul className="theory-substeps">
+            <li>
+              <strong>Numerador:</strong> producto de{" "}
+              <Math>(<Var>x</Var> − <Var>x</Var><Sub>j</Sub>)</Math> para todos
+              los puntos excepto el actual. Garantiza que el polinomio se haga
+              cero en los demás.
+            </li>
+            <li>
+              <strong>Denominador:</strong> reemplazás la <Var>x</Var> del
+              numerador por <Math><Var>x</Var><Sub>i</Sub></Math>. Garantiza que
+              el resultado sea 1 cuando se evalúa en{" "}
+              <Math><Var>x</Var><Sub>i</Sub></Math>.
+            </li>
+          </ul>
+        </li>
+        <li>
+          <strong>Armar el polinomio:</strong> multiplicá cada{" "}
+          <Math><Var>L</Var><Sub>i</Sub>(<Var>x</Var>)</Math> por su{" "}
+          <Math><Var>y</Var><Sub>i</Sub></Math> y sumá:
+          <div className="display-eq">
+            <Math>
+              <Var>P</Var>(<Var>x</Var>) = <Var>y</Var>
+              <Sub>0</Sub>
+              <Var>L</Var>
+              <Sub>0</Sub>(<Var>x</Var>) + <Var>y</Var>
+              <Sub>1</Sub>
+              <Var>L</Var>
+              <Sub>1</Sub>(<Var>x</Var>) + … + <Var>y</Var>
+              <Sub>n</Sub>
+              <Var>L</Var>
+              <Sub>n</Sub>(<Var>x</Var>)
+            </Math>
+          </div>
+        </li>
+        <li>
+          <strong>Simplificar (opcional):</strong> dejarlo en forma de Lagrange
+          o expandir y agrupar términos para llegar a la forma estándar{" "}
+          <Math>
+            <Var>a</Var>
+            <Var>x</Var>
+            <Sub>n</Sub> + <Var>b</Var>
+            <Var>x</Var>
+            <Sub>n−1</Sub> + …
+          </Math>
+          .
+        </li>
+        <li>
+          <strong>Evaluar:</strong> reemplazar la <Var>x</Var> en{" "}
+          <Math><Var>P</Var>(<Var>x</Var>)</Math> por el valor deseado para
+          predecir un valor intermedio.
+        </li>
+      </ol>
+      <h4>Ejemplo rápido con 3 puntos</h4>
+      <p>
+        Puntos: <Math>(1, 2), (2, 3), (4, 5)</Math>.
+      </p>
+      <div className="display-eq">
+        <Math>
+          <Var>L</Var>
+          <Sub>0</Sub>(<Var>x</Var>) ={" "}
+          <Frac
+            num={<>(<Var>x</Var>−2)(<Var>x</Var>−4)</>}
+            den={<>(1−2)(1−4)</>}
+          />
+        </Math>
+      </div>
+      <div className="display-eq">
+        <Math>
+          <Var>L</Var>
+          <Sub>1</Sub>(<Var>x</Var>) ={" "}
+          <Frac
+            num={<>(<Var>x</Var>−1)(<Var>x</Var>−4)</>}
+            den={<>(2−1)(2−4)</>}
+          />
+        </Math>
+      </div>
+      <div className="display-eq">
+        <Math>
+          <Var>L</Var>
+          <Sub>2</Sub>(<Var>x</Var>) ={" "}
+          <Frac
+            num={<>(<Var>x</Var>−1)(<Var>x</Var>−2)</>}
+            den={<>(4−1)(4−2)</>}
+          />
+        </Math>
+      </div>
+      <div className="display-eq">
+        <Math>
+          <Var>P</Var>(<Var>x</Var>) = 2 · <Var>L</Var>
+          <Sub>0</Sub> + 3 · <Var>L</Var>
+          <Sub>1</Sub> + 5 · <Var>L</Var>
+          <Sub>2</Sub>
+        </Math>
+      </div>
     </section>
   );
 }
