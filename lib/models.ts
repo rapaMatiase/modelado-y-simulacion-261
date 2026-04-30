@@ -472,7 +472,256 @@ export const MODELS: ModelDefinition[] = [
       },
     ],
   },
+
+  {
+    slug: "midpoint-rectangle",
+    name: "Rectángulo medio (Cotes)",
+    description:
+      "Regla del rectángulo medio compuesta (Newton-Cotes). Aproxima ∫ₐᵇ f(x) dx evaluando f en el punto medio de cada subintervalo.",
+    params: [
+      {
+        name: "expression",
+        label: "Función f(x)",
+        type: "string",
+        default: "sin(x)",
+        placeholder: "Ej: sin(x)",
+        description:
+          "Variable: x. Funciones permitidas: sin, cos, tan, exp, log, log10, sqrt, abs, pow. Constantes: pi, e.",
+      },
+      {
+        name: "a",
+        label: "Límite inferior (a)",
+        type: "number",
+        default: 0,
+        step: 0.1,
+      },
+      {
+        name: "b",
+        label: "Límite superior (b)",
+        type: "number",
+        default: 3.141592653589793,
+        step: 0.1,
+        description: "Para usar π exacto: 3.141592653589793.",
+      },
+      {
+        name: "n",
+        label: "Subintervalos (n)",
+        type: "number",
+        default: 10,
+        min: 1,
+        max: 10000,
+        step: 1,
+      },
+    ],
+    output: [
+      {
+        kind: "scalar",
+        metadataKey: "integral",
+        label: "Integral aproximada",
+        format: "number",
+      },
+      {
+        kind: "scalar",
+        metadataKey: "h",
+        label: "Paso (h)",
+        format: "number",
+      },
+      {
+        kind: "scalar",
+        metadataKey: "n",
+        label: "Subintervalos",
+        format: "integer",
+      },
+      {
+        kind: "line-chart",
+        xKey: "x",
+        yKey: "y",
+        xLabel: "x",
+        yLabel: "f(x)",
+      },
+      {
+        kind: "table",
+        title: "Subintervalos",
+        dataKey: "table",
+        columns: [
+          { key: "i", label: "i", format: "integer" },
+          { key: "x_left", label: "xᵢ⁻", format: "number" },
+          { key: "x_medio", label: "x̄ᵢ", format: "number" },
+          { key: "x_right", label: "xᵢ⁺", format: "number" },
+          { key: "f_x_medio", label: "f(x̄ᵢ)", format: "number" },
+          { key: "area", label: "h·f(x̄ᵢ)", format: "scientific" },
+          { key: "cumulative", label: "acumulado", format: "number" },
+        ],
+      },
+    ],
+  },
 ];
+
+MODELS.push(
+  {
+    slug: "trapezoid",
+    name: "Trapecio compuesto",
+    description:
+      "Aproxima ∫ₐᵇ f(x) dx uniendo los puntos consecutivos con segmentos rectos (Newton-Cotes orden 1). Sin restricciones sobre n.",
+    params: [
+      {
+        name: "expression",
+        label: "Función f(x)",
+        type: "string",
+        default: "sin(x)",
+        placeholder: "Ej: sin(x)",
+        description:
+          "Variable: x. Funciones permitidas: sin, cos, tan, exp, log, log10, sqrt, abs, pow. Constantes: pi, e.",
+      },
+      { name: "a", label: "Límite inferior (a)", type: "number", default: 0, step: 0.1 },
+      {
+        name: "b",
+        label: "Límite superior (b)",
+        type: "number",
+        default: 3.141592653589793,
+        step: 0.1,
+        description: "Para usar π exacto: 3.141592653589793.",
+      },
+      {
+        name: "n",
+        label: "Subintervalos (n)",
+        type: "number",
+        default: 10,
+        min: 1,
+        max: 10000,
+        step: 1,
+      },
+    ],
+    output: [
+      { kind: "scalar", metadataKey: "integral", label: "Integral aproximada", format: "number" },
+      { kind: "scalar", metadataKey: "h", label: "Paso (h)", format: "number" },
+      { kind: "scalar", metadataKey: "n", label: "Subintervalos", format: "integer" },
+      { kind: "line-chart", xKey: "x", yKey: "y", xLabel: "x", yLabel: "f(x)" },
+      {
+        kind: "table",
+        title: "Subintervalos",
+        dataKey: "table",
+        columns: [
+          { key: "i", label: "i", format: "integer" },
+          { key: "x_left", label: "xᵢ", format: "number" },
+          { key: "x_right", label: "xᵢ₊₁", format: "number" },
+          { key: "f_left", label: "f(xᵢ)", format: "number" },
+          { key: "f_right", label: "f(xᵢ₊₁)", format: "number" },
+          { key: "area", label: "área = h·(f_l+f_r)/2", format: "scientific" },
+          { key: "cumulative", label: "acumulado", format: "number" },
+        ],
+      },
+    ],
+  },
+  {
+    slug: "simpson-one-third",
+    name: "Regla de Simpson 1/3",
+    description:
+      "Aproxima ∫ₐᵇ f(x) dx ajustando parábolas (Newton-Cotes orden 2). Patrón 1, 4, 2, 4, …, 4, 1. Requiere n par.",
+    params: [
+      {
+        name: "expression",
+        label: "Función f(x)",
+        type: "string",
+        default: "sin(x)",
+        placeholder: "Ej: sin(x)",
+        description:
+          "Variable: x. Funciones permitidas: sin, cos, tan, exp, log, log10, sqrt, abs, pow. Constantes: pi, e.",
+      },
+      { name: "a", label: "Límite inferior (a)", type: "number", default: 0, step: 0.1 },
+      {
+        name: "b",
+        label: "Límite superior (b)",
+        type: "number",
+        default: 3.141592653589793,
+        step: 0.1,
+        description: "Para usar π exacto: 3.141592653589793.",
+      },
+      {
+        name: "n",
+        label: "Subintervalos (n, par)",
+        type: "number",
+        default: 10,
+        min: 2,
+        max: 10000,
+        step: 2,
+        description: "Debe ser par (si es impar el método no aplica directo).",
+      },
+    ],
+    output: [
+      { kind: "scalar", metadataKey: "integral", label: "Integral aproximada", format: "number" },
+      { kind: "scalar", metadataKey: "h", label: "Paso (h)", format: "number" },
+      { kind: "scalar", metadataKey: "n", label: "Subintervalos", format: "integer" },
+      { kind: "line-chart", xKey: "x", yKey: "y", xLabel: "x", yLabel: "f(x)" },
+      {
+        kind: "table",
+        title: "Puntos y coeficientes",
+        dataKey: "table",
+        columns: [
+          { key: "i", label: "i", format: "integer" },
+          { key: "x_i", label: "xᵢ", format: "number" },
+          { key: "f_x_i", label: "f(xᵢ)", format: "number" },
+          { key: "coef", label: "coef.", format: "integer" },
+          { key: "contrib", label: "coef·f(xᵢ)", format: "number" },
+        ],
+      },
+    ],
+  },
+  {
+    slug: "simpson-three-eighths",
+    name: "Regla de Simpson 3/8",
+    description:
+      "Aproxima ∫ₐᵇ f(x) dx con polinomios cúbicos (Newton-Cotes orden 3). Patrón 1, 3, 3, 2, 3, 3, 2, …, 1. Requiere n múltiplo de 3.",
+    params: [
+      {
+        name: "expression",
+        label: "Función f(x)",
+        type: "string",
+        default: "sin(x)",
+        placeholder: "Ej: sin(x)",
+        description:
+          "Variable: x. Funciones permitidas: sin, cos, tan, exp, log, log10, sqrt, abs, pow. Constantes: pi, e.",
+      },
+      { name: "a", label: "Límite inferior (a)", type: "number", default: 0, step: 0.1 },
+      {
+        name: "b",
+        label: "Límite superior (b)",
+        type: "number",
+        default: 3.141592653589793,
+        step: 0.1,
+        description: "Para usar π exacto: 3.141592653589793.",
+      },
+      {
+        name: "n",
+        label: "Subintervalos (n, múltiplo de 3)",
+        type: "number",
+        default: 9,
+        min: 3,
+        max: 10000,
+        step: 3,
+        description: "Valores válidos: 3, 6, 9, 12, …",
+      },
+    ],
+    output: [
+      { kind: "scalar", metadataKey: "integral", label: "Integral aproximada", format: "number" },
+      { kind: "scalar", metadataKey: "h", label: "Paso (h)", format: "number" },
+      { kind: "scalar", metadataKey: "n", label: "Subintervalos", format: "integer" },
+      { kind: "line-chart", xKey: "x", yKey: "y", xLabel: "x", yLabel: "f(x)" },
+      {
+        kind: "table",
+        title: "Puntos y coeficientes",
+        dataKey: "table",
+        columns: [
+          { key: "i", label: "i", format: "integer" },
+          { key: "x_i", label: "xᵢ", format: "number" },
+          { key: "f_x_i", label: "f(xᵢ)", format: "number" },
+          { key: "coef", label: "coef.", format: "integer" },
+          { key: "contrib", label: "coef·f(xᵢ)", format: "number" },
+        ],
+      },
+    ],
+  },
+);
 
 export function getModel(slug: string): ModelDefinition | undefined {
   return MODELS.find((m) => m.slug === slug);

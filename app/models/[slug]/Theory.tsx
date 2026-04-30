@@ -6,6 +6,10 @@ export function Theory({ slug }: { slug: string }) {
   if (slug === "newton-raphson") return <NewtonRaphsonTheory />;
   if (slug === "aitken") return <AitkenTheory />;
   if (slug === "lagrange") return <LagrangeTheory />;
+  if (slug === "midpoint-rectangle") return <MidpointRectangleTheory />;
+  if (slug === "trapezoid") return <TrapezoidTheory />;
+  if (slug === "simpson-one-third") return <SimpsonOneThirdTheory />;
+  if (slug === "simpson-three-eighths") return <SimpsonThreeEighthsTheory />;
   return null;
 }
 
@@ -534,6 +538,279 @@ function LagrangeTheory() {
       </div>
     </section>
   );
+}
+
+function MidpointRectangleTheory() {
+  return (
+    <section className="theory">
+      <h3>Teoría</h3>
+      <h4>Regla del Rectángulo Medio Compuesta</h4>
+      <p>
+        Es una fórmula <strong>abierta</strong> de Newton-Cotes para integración
+        numérica. Aproxima el área bajo la curva sumando rectángulos cuya
+        altura es el valor de la función en el punto medio de cada
+        subintervalo.
+      </p>
+      <h4>Paso a Paso</h4>
+      <ol className="theory-steps">
+        <li>
+          <strong>Definir el integrando y los límites:</strong> tenés{" "}
+          <Math>
+            <Var>f</Var>(<Var>x</Var>)
+          </Math>{" "}
+          y los extremos <Math><Var>a</Var></Math>, <Math><Var>b</Var></Math>{" "}
+          del intervalo donde querés calcular{" "}
+          <Math>
+            ∫<Sub>a</Sub>
+            <Sup>b</Sup> <Var>f</Var>(<Var>x</Var>) d<Var>x</Var>
+          </Math>
+          .
+        </li>
+        <li>
+          <strong>Elegir <Var>n</Var> subintervalos:</strong> dividir{" "}
+          <Math>[<Var>a</Var>, <Var>b</Var>]</Math> en <Var>n</Var> partes
+          iguales de ancho:
+          <div className="display-eq">
+            <Math>
+              <Var>h</Var> ={" "}
+              <Frac
+                num={
+                  <>
+                    <Var>b</Var> − <Var>a</Var>
+                  </>
+                }
+                den={<Var>n</Var>}
+              />
+            </Math>
+          </div>
+        </li>
+        <li>
+          <strong>Calcular los puntos medios:</strong> el punto medio del{" "}
+          <Math>i</Math>-ésimo subintervalo es:
+          <div className="display-eq">
+            <Math>
+              <Var>x</Var>
+              <Sub>i</Sub> = <Var>a</Var> + (<Var>i</Var> + ½) <Var>h</Var>,
+              {"  "}
+              <Var>i</Var> = 0, 1, …, <Var>n</Var> − 1
+            </Math>
+          </div>
+        </li>
+        <li>
+          <strong>Aplicar la fórmula compuesta:</strong> sumar las áreas de los{" "}
+          <Var>n</Var> rectángulos:
+          <div className="display-eq">
+            <Math>
+              ∫<Sub>a</Sub>
+              <Sup>b</Sup> <Var>f</Var>(<Var>x</Var>) d<Var>x</Var> ≈{" "}
+              <Var>h</Var> · Σ<Sub>i=0</Sub>
+              <Sup>n−1</Sup> <Var>f</Var>(<Var>x</Var>
+              <Sub>i</Sub>)
+            </Math>
+          </div>
+        </li>
+      </ol>
+      <h4>Error</h4>
+      <p>
+        El error de la regla compuesta es del orden{" "}
+        <Math>O(<Var>h</Var>²)</Math>: si dividís <Var>h</Var> a la mitad, el
+        error se reduce aproximadamente cuatro veces. Si la función es lo
+        bastante suave, aumentar <Var>n</Var> mejora la aproximación
+        rápidamente.
+      </p>
+    </section>
+  );
+}
+
+function TrapezoidTheory() {
+  return (
+    <section className="theory">
+      <h3>Teoría</h3>
+      <h4>Regla del Trapecio Compuesta</h4>
+      <p>
+        Conecta dos puntos consecutivos con una línea recta formando un
+        trapecio. Es el método de Newton-Cotes de orden 1 (interpolación
+        lineal). No tiene restricciones sobre <Var>n</Var>.
+      </p>
+      <h4>Paso a Paso</h4>
+      <ol className="theory-steps">
+        <li>
+          <strong>Definir el integrando y los límites:</strong> identificá{" "}
+          <Math><Var>f</Var>(<Var>x</Var>)</Math> y los extremos{" "}
+          <Math><Var>a</Var></Math>, <Math><Var>b</Var></Math>.
+        </li>
+        <li>
+          <strong>Calcular el paso:</strong>
+          <div className="display-eq">
+            <Math>
+              <Var>h</Var> ={" "}
+              <Frac
+                num={<><Var>b</Var> − <Var>a</Var></>}
+                den={<Var>n</Var>}
+              />
+            </Math>
+          </div>
+        </li>
+        <li>
+          <strong>Generar los <Math><Var>n</Var>+1</Math> puntos:</strong>{" "}
+          <Math>
+            <Var>x</Var><Sub>0</Sub> = <Var>a</Var>, <Var>x</Var><Sub>1</Sub> ={" "}
+            <Var>a</Var>+<Var>h</Var>, …, <Var>x</Var><Sub>n</Sub> = <Var>b</Var>
+          </Math>{" "}
+          y evaluar <Math><Var>y</Var><Sub>i</Sub> = <Var>f</Var>(<Var>x</Var><Sub>i</Sub>)</Math>.
+        </li>
+        <li>
+          <strong>Aplicar la fórmula compuesta:</strong> los extremos pesan 1
+          y los puntos interiores pesan 2 (porque son borde derecho de un
+          trapecio e izquierdo del siguiente):
+          <div className="display-eq">
+            <Math>
+              ∫<Sub>a</Sub><Sup>b</Sup> <Var>f</Var>(<Var>x</Var>) d<Var>x</Var> ≈{" "}
+              <Frac num={<Var>h</Var>} den={<>2</>} />{" "}
+              [ <Var>f</Var>(<Var>a</Var>) + 2·Σ<Sub>i=1</Sub><Sup>n−1</Sup>{" "}
+              <Var>f</Var>(<Var>x</Var><Sub>i</Sub>) + <Var>f</Var>(<Var>b</Var>) ]
+            </Math>
+          </div>
+        </li>
+      </ol>
+      <h4>Error</h4>
+      <p>
+        Error global de orden <Math>O(<Var>h</Var>²)</Math>:{" "}
+        <Math>
+          <Var>E</Var> = −
+          <Frac num={<>(<Var>b</Var>−<Var>a</Var>)·<Var>h</Var>²</>} den={<>12</>} />
+          ·<Var>f</Var>″(ξ)
+        </Math>
+        . Es exacta para polinomios de grado 1 y al dividir <Var>h</Var> a la
+        mitad el error se reduce ~4 veces.
+      </p>
+    </section>
+  );
+}
+
+function SimpsonOneThirdTheory() {
+  return (
+    <section className="theory">
+      <h3>Teoría</h3>
+      <h4>Regla de Simpson 1/3 Compuesta</h4>
+      <p>
+        Usa tres puntos para ajustar una parábola (Newton-Cotes orden 2). Es
+        exacta para polinomios hasta grado 3. El nombre <em>1/3</em> viene del
+        factor <Math><Var>h</Var>/3</Math> en la fórmula. Requiere{" "}
+        <strong><Var>n</Var> par</strong>.
+      </p>
+      <h4>Paso a Paso</h4>
+      <ol className="theory-steps">
+        <li>
+          <strong>Verificar que <Var>n</Var> sea par.</strong> Si es impar, el
+          método no aplica directo (se combina con Simpson 3/8 en los 3
+          primeros segmentos).
+        </li>
+        <li>
+          <strong>Calcular el paso</strong>{" "}
+          <Math>
+            <Var>h</Var> = (<Var>b</Var>−<Var>a</Var>)/<Var>n</Var>
+          </Math>{" "}
+          y los <Math><Var>n</Var>+1</Math> puntos{" "}
+          <Math><Var>x</Var><Sub>i</Sub> = <Var>a</Var>+<Var>i</Var>·<Var>h</Var></Math>.
+        </li>
+        <li>
+          <strong>Asignar coeficientes según el índice:</strong>
+          <ul className="theory-substeps">
+            <li>Extremos (<Math><Var>x</Var><Sub>0</Sub></Math>, <Math><Var>x</Var><Sub>n</Sub></Math>): coef. <strong>1</strong>.</li>
+            <li>Índices impares (1, 3, 5, …): coef. <strong>4</strong>.</li>
+            <li>Índices pares interiores (2, 4, …, <Math><Var>n</Var>−2</Math>): coef. <strong>2</strong>.</li>
+          </ul>
+          Patrón: <Math>1, 4, 2, 4, 2, …, 4, 1</Math>.
+        </li>
+        <li>
+          <strong>Aplicar la fórmula compuesta:</strong>
+          <div className="display-eq">
+            <Math>
+              ∫<Sub>a</Sub><Sup>b</Sup> <Var>f</Var>(<Var>x</Var>) d<Var>x</Var> ≈{" "}
+              <Frac num={<Var>h</Var>} den={<>3</>} />{" "}
+              [ <Var>f</Var><Sub>0</Sub> + 4·Σ<Sub>impares</Sub> <Var>f</Var><Sub>i</Sub>{" "}
+              + 2·Σ<Sub>pares</Sub> <Var>f</Var><Sub>i</Sub> + <Var>f</Var><Sub>n</Sub> ]
+            </Math>
+          </div>
+        </li>
+      </ol>
+      <h4>Error</h4>
+      <p>
+        Error global de orden <Math>O(<Var>h</Var>⁴)</Math>:{" "}
+        <Math>
+          <Var>E</Var> = −
+          <Frac num={<>(<Var>b</Var>−<Var>a</Var>)·<Var>h</Var>⁴</>} den={<>180</>} />
+          ·<Var>f</Var><Sup>(4)</Sup>(ξ)
+        </Math>
+        . Si <Var>h</Var> se reduce a la mitad, el error se divide ~16.
+      </p>
+    </section>
+  );
+}
+
+function SimpsonThreeEighthsTheory() {
+  return (
+    <section className="theory">
+      <h3>Teoría</h3>
+      <h4>Regla de Simpson 3/8 Compuesta</h4>
+      <p>
+        Ajusta polinomios cúbicos sobre cada grupo de 4 puntos
+        (Newton-Cotes orden 3). El nombre <em>3/8</em> viene del factor{" "}
+        <Math>3<Var>h</Var>/8</Math>. Es exacta para polinomios hasta grado 3.
+        Se usa principalmente cuando <Var>n</Var> es impar (combinada con
+        Simpson 1/3) o cuando <Var>n</Var> es múltiplo de 3 por diseño.
+      </p>
+      <h4>Paso a Paso</h4>
+      <ol className="theory-steps">
+        <li>
+          <strong>Verificar que <Var>n</Var> sea múltiplo de 3:</strong>{" "}
+          <Math><Var>n</Var> = 3, 6, 9, 12, …</Math>.
+        </li>
+        <li>
+          <strong>Calcular el paso</strong>{" "}
+          <Math>
+            <Var>h</Var> = (<Var>b</Var>−<Var>a</Var>)/<Var>n</Var>
+          </Math>{" "}
+          y los <Math><Var>n</Var>+1</Math> puntos.
+        </li>
+        <li>
+          <strong>Asignar coeficientes según el índice:</strong>
+          <ul className="theory-substeps">
+            <li>Extremos: coef. <strong>1</strong>.</li>
+            <li>Índices múltiplos de 3 interiores (3, 6, …, <Math><Var>n</Var>−3</Math>): coef. <strong>2</strong>.</li>
+            <li>Resto de los puntos interiores: coef. <strong>3</strong>.</li>
+          </ul>
+          Patrón: <Math>1, 3, 3, 2, 3, 3, 2, …, 3, 3, 1</Math>.
+        </li>
+        <li>
+          <strong>Aplicar la fórmula compuesta:</strong>
+          <div className="display-eq">
+            <Math>
+              ∫<Sub>a</Sub><Sup>b</Sup> <Var>f</Var>(<Var>x</Var>) d<Var>x</Var> ≈{" "}
+              <Frac num={<>3<Var>h</Var></>} den={<>8</>} />{" "}
+              [ <Var>f</Var><Sub>0</Sub> + 3·Σ<Sub>i≡1,2 (mod 3)</Sub> <Var>f</Var><Sub>i</Sub>{" "}
+              + 2·Σ<Sub>i≡0 (mod 3)</Sub> <Var>f</Var><Sub>i</Sub> + <Var>f</Var><Sub>n</Sub> ]
+            </Math>
+          </div>
+        </li>
+      </ol>
+      <h4>Error</h4>
+      <p>
+        Error global de orden <Math>O(<Var>h</Var>⁴)</Math>:{" "}
+        <Math>
+          <Var>E</Var> = −
+          <Frac num={<>(<Var>b</Var>−<Var>a</Var>)<Sup>5</Sup></>} den={<>6480</>} />
+          ·<Var>f</Var><Sup>(4)</Sup>(ξ)
+        </Math>
+        . Mismo orden que Simpson 1/3 con distinta constante.
+      </p>
+    </section>
+  );
+}
+
+function Sup({ children }: { children: ReactNode }) {
+  return <sup className="math-sup">{children}</sup>;
 }
 
 function Sub({ children }: { children: ReactNode }) {

@@ -200,6 +200,10 @@ function LineChart({ block, data }: { block: LineChartBlock; data: SolveData }) 
   const markers = Array.isArray(rawMarkers)
     ? (rawMarkers as Array<Record<string, number>>)
     : null;
+  const rawRectangles = data["rectangles"];
+  const rectangles = Array.isArray(rawRectangles)
+    ? (rawRectangles as Array<{ x: number; w: number; h: number }>)
+    : null;
   if (series.length === 0) {
     return <p className="muted">Sin datos para graficar.</p>;
   }
@@ -212,10 +216,11 @@ function LineChart({ block, data }: { block: LineChartBlock; data: SolveData }) 
   const ys = series.map((s) => Number(s[block.yKey] ?? 0));
   const markerXs = markers?.map((m) => Number(m[block.xKey] ?? 0)) ?? [];
   const markerYs = markers?.map((m) => Number(m[block.yKey] ?? 0)) ?? [];
+  const rectYs = rectangles?.map((r) => Number(r.h)) ?? [];
   const xMin = Math.min(...xs, ...markerXs);
   const xMax = Math.max(...xs, ...markerXs);
-  const yMin = Math.min(0, ...ys, ...markerYs);
-  const yMax = Math.max(0, ...ys, ...markerYs);
+  const yMin = Math.min(0, ...ys, ...markerYs, ...rectYs);
+  const yMax = Math.max(0, ...ys, ...markerYs, ...rectYs);
 
   const sx = (v: number) =>
     PAD + ((v - xMin) / (xMax - xMin || 1)) * (W - 2 * PAD);
@@ -269,6 +274,29 @@ function LineChart({ block, data }: { block: LineChartBlock; data: SolveData }) 
           strokeDasharray="4 4"
         />
       )}
+      {rectangles?.map((r, i) => {
+        const xc = Number(r.x);
+        const w = Number(r.w);
+        const height = Number(r.h);
+        const xLeft = sx(xc - w / 2);
+        const xRight = sx(xc + w / 2);
+        const yBase = sy(0);
+        const yTop = sy(height);
+        return (
+          <rect
+            key={`rect-${i}`}
+            x={Math.min(xLeft, xRight)}
+            y={Math.min(yBase, yTop)}
+            width={Math.max(1, Math.abs(xRight - xLeft))}
+            height={Math.abs(yBase - yTop)}
+            fill="#3b82f6"
+            fillOpacity={0.18}
+            stroke="#3b82f6"
+            strokeOpacity={0.5}
+            strokeWidth={1}
+          />
+        );
+      })}
       <path d={path} fill="none" stroke="#3b82f6" strokeWidth={2} />
       {markers?.map((m, i) => (
         <circle
