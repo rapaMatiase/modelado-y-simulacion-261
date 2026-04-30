@@ -30,7 +30,7 @@ const SECTIONS: NavSection[] = [
   },
   {
     title: "Derivación numérica",
-    items: [{ label: "Diferencias Divididas / Finitas" }],
+    items: [{ label: "Diferencias Divididas / Finitas", slug: "finite-differences" }],
   },
   {
     title: "Integración numérica",

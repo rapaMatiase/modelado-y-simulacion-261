@@ -11,6 +11,7 @@ export function Theory({ slug }: { slug: string }) {
   if (slug === "simpson-one-third") return <SimpsonOneThirdTheory />;
   if (slug === "simpson-three-eighths") return <SimpsonThreeEighthsTheory />;
   if (slug === "monte-carlo") return <MonteCarloTheory />;
+  if (slug === "finite-differences") return <FiniteDifferencesTheory />;
   return null;
 }
 
@@ -909,6 +910,117 @@ function MonteCarloTheory() {
         dimensión del problema, por lo que Monte Carlo se vuelve
         competitivo a partir de ~5–8 dimensiones frente a Newton-Cotes.
       </p>
+    </section>
+  );
+}
+
+function FiniteDifferencesTheory() {
+  return (
+    <section className="theory">
+      <h3>Teoría</h3>
+      <h4>Diferencias divididas y finitas</h4>
+      <p>
+        Aproxima la derivada de una función conocida solo en puntos
+        discretos. Parten de la definición de derivada{" "}
+        <Math>
+          <Var>f</Var>′(<Var>x</Var>) ={" "}
+          <span>
+            lím<Sub>h→0</Sub>
+          </span>
+          [<Var>f</Var>(<Var>x</Var>+<Var>h</Var>) − <Var>f</Var>(<Var>x</Var>)] /{" "}
+          <Var>h</Var>
+        </Math>{" "}
+        pero con <Var>h</Var> finito (el espaciado entre puntos).
+      </p>
+      <h4>Los tres esquemas</h4>
+      <ol className="theory-steps">
+        <li>
+          <strong>Progresivo (hacia adelante):</strong> usa{" "}
+          <Math><Var>x</Var><Sub>i</Sub></Math> y puntos futuros.
+          <div className="display-eq">
+            <Math>
+              <Var>f</Var>′<Sub>i</Sub> ≈{" "}
+              <Frac
+                num={<><Var>f</Var><Sub>i+1</Sub> − <Var>f</Var><Sub>i</Sub></>}
+                den={<Var>h</Var>}
+              />
+            </Math>
+          </div>
+          <div className="display-eq">
+            <Math>
+              <Var>f</Var>″<Sub>i</Sub> ≈{" "}
+              <Frac
+                num={<><Var>f</Var><Sub>i+2</Sub> − 2·<Var>f</Var><Sub>i+1</Sub> + <Var>f</Var><Sub>i</Sub></>}
+                den={<><Var>h</Var>²</>}
+              />
+            </Math>
+          </div>
+          Error <Math>O(<Var>h</Var>)</Math>.
+        </li>
+        <li>
+          <strong>Regresivo (hacia atrás):</strong> usa{" "}
+          <Math><Var>x</Var><Sub>i</Sub></Math> y puntos pasados.
+          <div className="display-eq">
+            <Math>
+              <Var>f</Var>′<Sub>i</Sub> ≈{" "}
+              <Frac
+                num={<><Var>f</Var><Sub>i</Sub> − <Var>f</Var><Sub>i−1</Sub></>}
+                den={<Var>h</Var>}
+              />
+            </Math>
+          </div>
+          <div className="display-eq">
+            <Math>
+              <Var>f</Var>″<Sub>i</Sub> ≈{" "}
+              <Frac
+                num={<><Var>f</Var><Sub>i</Sub> − 2·<Var>f</Var><Sub>i−1</Sub> + <Var>f</Var><Sub>i−2</Sub></>}
+                den={<><Var>h</Var>²</>}
+              />
+            </Math>
+          </div>
+          Error <Math>O(<Var>h</Var>)</Math>.
+        </li>
+        <li>
+          <strong>Central (centrado):</strong> usa un punto a cada lado.{" "}
+          <em>Recomendado por su mayor precisión.</em>
+          <div className="display-eq">
+            <Math>
+              <Var>f</Var>′<Sub>i</Sub> ≈{" "}
+              <Frac
+                num={<><Var>f</Var><Sub>i+1</Sub> − <Var>f</Var><Sub>i−1</Sub></>}
+                den={<>2·<Var>h</Var></>}
+              />
+            </Math>
+          </div>
+          <div className="display-eq">
+            <Math>
+              <Var>f</Var>″<Sub>i</Sub> ≈{" "}
+              <Frac
+                num={<><Var>f</Var><Sub>i+1</Sub> − 2·<Var>f</Var><Sub>i</Sub> + <Var>f</Var><Sub>i−1</Sub></>}
+                den={<><Var>h</Var>²</>}
+              />
+            </Math>
+          </div>
+          Error <Math>O(<Var>h</Var>²)</Math>: al restar las expansiones de
+          Taylor hacia adelante y atrás se cancela el término de orden{" "}
+          <Var>h</Var>.
+        </li>
+      </ol>
+      <h4>Estrategia recomendada</h4>
+      <ul className="theory-substeps">
+        <li>
+          <strong>Punto inicial</strong> → diferencias <em>progresivas</em>{" "}
+          (no hay vecinos a la izquierda).
+        </li>
+        <li>
+          <strong>Puntos intermedios</strong> → diferencias{" "}
+          <em>centrales</em> (más precisas).
+        </li>
+        <li>
+          <strong>Punto final</strong> → diferencias <em>regresivas</em>{" "}
+          (no hay vecinos a la derecha).
+        </li>
+      </ul>
     </section>
   );
 }
